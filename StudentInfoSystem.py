@@ -5,7 +5,7 @@ import os.path
 import pandas as pd
 import os
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget, QComboBox
 
 filename_studentCSV = "university_records.csv"
 filename_courseCSV = "course_records.csv"
@@ -18,12 +18,23 @@ class Controller(QtWidgets.QMainWindow):
         super(Controller, self).__init__()
         uic.loadUi('GUIforSSIS.ui', self)
         self.show()
+        # Creating the CSV files for student and course records
         self.createCSV.clicked.connect(lambda:self.createcsvfiles())
+        # Populating the Tables for the SSIS Application
         self.studentTableWidget = self.findChild(QTableWidget, 'studentInfoDisplay')
         self.courseTableWidget = self.findChild(QTableWidget, 'courseListDisplay')
         self.loadstudentCSV("university_records.csv", self.studentTableWidget)
         self.loadcourseCSV('course_records.csv', self.courseTableWidget)
-        self.addStudent.clicked.connect(self.pushButton_handler)
+        # Populating the ComboBox for the Course Picker
+        self.coursepickerbox = self.findChild(QComboBox, 'coursePicker')
+        self.loadcoursecode()
+        # Adding the student info
+        idnumber = self.idNumberInput.text()  # Get ID number value from user
+        name = self.nameInput.text()  # Get name value fromm user
+        year_level = self.yearlvlInput.text()  # Get year level value from user
+        studentgender = self.genderInput.text() # Get student gender from user
+        coursecode = self.coursepickerbox.currentText() # Get course code from user
+        self.addStudent.clicked.connect(self.addstudent(idnumber, name, year_level, studentgender, coursecode))
 
 
     def pushButton_handler(self):
@@ -105,28 +116,30 @@ class Controller(QtWidgets.QMainWindow):
                 tableWidget.setColumnWidth(0, 90)
                 tableWidget.setColumnWidth(1, 190)
 
-    def addstudent(self):
-        idnumber = self.idNumberInput.text()    # Get ID number value from user
-        name = self.nameInput.text()            # Get name value fromm user
-        year_level = self.yearlvlInput.text()   # Get year level value from user
-        gender = self.gender
+    def loadcoursecode(self):
+        course_code = []
+        # Open CSV File and store data to a variable
+        with open('course_records.csv', 'r') as file:
+            courserecord = csv.reader(file)
+            # For loop to read the values of the Course Name column
+            for row in courserecord:
+                course_code.append(row[1])  # Populate the list of course_code
+        self.coursepickerbox.addItems(course_code)
 
+    def addstudent(self, idnum, student_name, yearlvl, gender, course):
         # Add values to the Student Table Widget
         row_pos = self.studentTableWidget.rowCount()
         self.studentTableWidget.insertRow(row_pos)
-        self.studentTableWidget.setItem(row_pos, 0, QTableWidgetItem(idnumber))
-        self.studentTableWidget.setItem(row_pos, 1, QTableWidgetItem(name))
-        self.studentTableWidget.setItem(row_pos, 2, QTableWidgetItem(year_level))
+        self.studentTableWidget.setItem(row_pos, 0, QTableWidgetItem(idnum))
+        self.studentTableWidget.setItem(row_pos, 1, QTableWidgetItem(student_name))
+        self.studentTableWidget.setItem(row_pos, 2, QTableWidgetItem(yearlvl))
         self.studentTableWidget.setItem(row_pos, 3, QTableWidgetItem(gender))
+        self.studentTableWidget.setItem(row_pos, 4, QTableWidgetItem(course))
 
         # Add values to the CSV file
         with open(filename_studentCSV, mode='a', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=student_field_csv)
-            writer.writerows({"IDNumber": idnumber, "Name": name, "Year Level": year_level, "Gender": gender})
-
-
-    def loadcoursecode(self):
-        
+            writer.writerows({"IDNumber": idnum, "Name": student_name, "Year Level": yearlvl, "Gender": gender, "Course Code": course})
 
 
 
