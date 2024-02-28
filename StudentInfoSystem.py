@@ -6,7 +6,7 @@ import os
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget, QComboBox, QLineEdit, QGroupBox
 
-
+# GLOBAL VARIABLES
 filename_studentCSV = "university_records.csv"
 filename_courseCSV = "course_records.csv"
 student_field_csv = ['IDNumber', 'Name', 'Year Level', 'Gender', 'Course Code']
@@ -21,10 +21,8 @@ class Controller(QtWidgets.QMainWindow):
         # Creating the CSV files for student and course records
         self.createCSV.clicked.connect(lambda:self.createcsvfiles())
         # Populating the Tables for the SSIS Application
-        self.studentTableWidget = self.findChild(QTableWidget, 'studentInfoDisplay')
-        self.courseTableWidget = self.findChild(QTableWidget, 'courseListDisplay')
-        self.loadstudentCSV("university_records.csv", self.studentTableWidget)
-        self.loadcourseCSV('course_records.csv', self.courseTableWidget)
+        self.loadstudentCSV("university_records.csv", self.studentInfoDisplay)
+        self.loadcourseCSV('course_records.csv', self.courseListDisplay)
         # Populating the ComboBox for the Course Picker
         self.coursepickerbox = self.findChild(QComboBox, 'coursePicker')
         self.loadcoursecode()
@@ -131,8 +129,23 @@ class Controller(QtWidgets.QMainWindow):
                 course_list.append(row[0])  # Populate the list of course_code
         self.coursepickerbox.addItems(course_list)
 
+    def updatestudenttable(self):
+        # Clear the existing data in the table
+        self.studentInfoDisplay.clearContents()
+        self.studentInfoDisplay.setRowCount(0)
+        # Read data from the CSV file. Will work for either the student or course CSV file.
+        with open(filename_studentCSV, mode='r') as csvfile:
+            csv_read = csv.DictReader(csvfile)
+            for row_dict in csv_read:
+                row_position = self.studentInfoDisplay.rowCount()
+                self.studentInfoDisplay.insertRow(row_position)
+                # Appending the values into the table
+                for col_num, key in enumerate(['IDNumber', 'Name', 'Year Level', 'Gender', 'Course Code']):
+                    item = QTableWidgetItem(str(row_dict[key]))
+                    self.studentInfoDisplay.setItem(row_position, col_num, item)
 
     def addstudent(self):
+        # Get input from text fields
         id_input = self.idNumberInput.text()
         name_input = self.nameInput.text()
         year_input = self.yearlvlInput.text()
@@ -140,8 +153,11 @@ class Controller(QtWidgets.QMainWindow):
         course_input = self.coursepickerbox.currentText()
         # Add values to the CSV file
         with open(filename_studentCSV, mode='a', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=student_field_csv, extrasaction='ignore')
+            writer = csv.DictWriter(file, fieldnames= student_field_csv, extrasaction='ignore')
             writer.writerow({'IDNumber': id_input, 'Name': name_input, 'Year Level': year_input, 'Gender': gender_input, 'Course Code': course_input})
+        # Call the function to update the table whenver the button is clicked
+        self.updatestudenttable()
+
 
 
 
