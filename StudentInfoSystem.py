@@ -33,6 +33,8 @@ class Controller(QtWidgets.QMainWindow):
         self.deleteStudent.clicked.connect(lambda: self.deletestudent())
         # Adding course
         self.addCourse.clicked.connect(lambda: self.addcourse())
+        # Deleting a course from the CSV file
+        self.deleteCourse.clicked.connect(lambda: self.deletecourse())
 
 
     def pushButton_handler(self):
@@ -204,10 +206,11 @@ class Controller(QtWidgets.QMainWindow):
                     break
             # Remove the corresponding dictionary
             del rows[index_to_delete]
-            # Step 4: Write the updated list of dictionaries back to the CSV file
+            #  Write the updated list of dictionaries back to the CSV file
             with open(filename_studentCSV, 'w', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=student_field_csv)
                 writer.writerows(rows)
+                # Popup notification if student info is deleted.
                 student_del = QMessageBox()
                 student_del.setWindowTitle('Student Delete')
                 student_del.setText('Student with ID Number: ' + id_value + ' has been deleted.')
@@ -215,6 +218,7 @@ class Controller(QtWidgets.QMainWindow):
                 student_del.exec_()
 
         else:
+            # Popup notification if student id number does not exist.
             student_not_exist = QMessageBox()
             student_not_exist.setWindowTitle('Student Delete')
             student_not_exist.setText('Student with ID Number: ' + id_value + ' does not exist!')
@@ -224,6 +228,44 @@ class Controller(QtWidgets.QMainWindow):
 
         self.updatestudenttable()
 
+    def deletecourse(self):
+        key_identifier = 'Course Code'
+        deletecourseDialog = QInputDialog()
+        course_codevalue, okPressed = deletecourseDialog.getText(self, "Delete Course", "Enter course code: ")
+        if okPressed and course_codevalue != '':
+            rows = []
+            with open(filename_courseCSV, 'r', newline='') as csvfile:
+                coursereader = csv.DictReader(csvfile, fieldnames=course_field_csv)
+                for row in coursereader:
+                    rows.append(row)
+            # Identify the row to delete
+            index_to_delete = None
+            for i, row in enumerate(rows):
+                if row[key_identifier] == course_codevalue:
+                    index_to_delete = i
+                    break
+            # Remove the corresponding dictionary
+            del rows[index_to_delete]
+            #  Write the updated list of dictionaries back to the CSV file
+            with open(filename_courseCSV, 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=course_field_csv)
+                writer.writerows(rows)
+                # Pop up notification to confirm that course has been deleted from the CSV file
+                course_del = QMessageBox()
+                course_del.setWindowTitle('Course Delete')
+                course_del.setText('Course with code: ' + course_codevalue + ' has been deleted.')
+                course_del.setIcon(QMessageBox.Information)
+                course_del.exec_()
+        else:
+            # Popup notification if course code does not exist in the CSV file.
+            course_not_exist = QMessageBox()
+            course_not_exist.setWindowTitle('Course Delete')
+            course_not_exist.setText('Course with code: ' + course_codevalue + ' does not exist!')
+            course_not_exist.setIcon(QMessageBox.Critical)
+            course_not_exist.setStandardButtons(QMessageBox.Close)
+            course_not_exist.exec_()
+
+        self.updatecoursetable()
 
 
 app = QtWidgets.QApplication(sys.argv)
