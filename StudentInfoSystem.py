@@ -28,9 +28,11 @@ class Controller(QtWidgets.QMainWindow):
         self.coursepickerbox = self.findChild(QComboBox, 'coursePicker')
         self.loadcoursecode()
         # Adding the student info
-        self.studentInfoEditor = self.findChild(QGroupBox, 'studentInfoEditor')
-        self.addStudent.clicked.connect(lambda:self.addstudent())
+        self.addStudent.clicked.connect(lambda: self.addstudent())
+        # Deleting student info
         self.deleteStudent.clicked.connect(lambda: self.deletestudent())
+        # Adding course
+        self.addCourse.clicked.connect(lambda: self.addcourse())
 
 
     def pushButton_handler(self):
@@ -152,10 +154,10 @@ class Controller(QtWidgets.QMainWindow):
         with open(filename_courseCSV, mode='r') as csvfile:
             course_read = csv.DictReader(csvfile)
             for row_dict in course_read:
-                row_position = self.studentInfoDisplay.rowCount()
+                row_position = self.courseListDisplay.rowCount()
                 self.courseListDisplay.insertRow(row_position)
                 # Appending the values into the table
-                for col_num, key in enumerate(['IDNumber', 'Name', 'Year Level', 'Gender', 'Course Code']):
+                for col_num, key in enumerate(['Course Code', 'Course Name']):
                     item = QTableWidgetItem(str(row_dict[key]))
                     self.courseListDisplay.setItem(row_position, col_num, item)
 
@@ -170,8 +172,19 @@ class Controller(QtWidgets.QMainWindow):
         with open(filename_studentCSV, mode='a', newline='') as file:
             writer = csv.DictWriter(file, fieldnames= student_field_csv, extrasaction='ignore')
             writer.writerow({'IDNumber': id_input, 'Name': name_input, 'Year Level': year_input, 'Gender': gender_input, 'Course Code': course_input})
-        # Call the function to update the table whenver the button is clicked
+        # Call the function to update the table whenever the button is clicked
         self.updatestudenttable()
+    def addcourse(self):
+        # Get input from text fields
+        course_code_input = self.courseCodeInput.text()
+        course_name_input = self.courseNameInput.text()
+        # Add values to the CSV file
+        with open(filename_courseCSV, mode='a', newline='') as file:
+            append = csv.DictWriter(file, fieldnames= course_field_csv, extrasaction='ignore')
+            append.writerow({'Course Code': course_code_input, 'Course Name': course_name_input})
+        # Call the function to update the table whenever the button is clicked
+        self.updatecoursetable()
+
 
     def deletestudent(self):
         key = 'IDNumber'
