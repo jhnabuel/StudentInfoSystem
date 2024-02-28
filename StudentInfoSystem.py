@@ -2,10 +2,10 @@ import sys
 import csv
 from csv import DictWriter, DictReader
 import os.path
-import pandas as pd
 import os
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget, QComboBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget, QComboBox, QLineEdit, QGroupBox
+
 
 filename_studentCSV = "university_records.csv"
 filename_courseCSV = "course_records.csv"
@@ -16,7 +16,7 @@ course_field_csv = ['Course Code', 'Course Name']
 class Controller(QtWidgets.QMainWindow):
     def __init__(self):
         super(Controller, self).__init__()
-        uic.loadUi('GUIforSSIS.ui', self)
+        self.ui = uic.loadUi('GUIforSSIS.ui', self)
         self.show()
         # Creating the CSV files for student and course records
         self.createCSV.clicked.connect(lambda:self.createcsvfiles())
@@ -29,16 +29,21 @@ class Controller(QtWidgets.QMainWindow):
         self.coursepickerbox = self.findChild(QComboBox, 'coursePicker')
         self.loadcoursecode()
         # Adding the student info
-        idnumber = self.idNumberInput.text()  # Get ID number value from user
-        name = self.nameInput.text()  # Get name value fromm user
-        year_level = self.yearlvlInput.text()  # Get year level value from user
-        studentgender = self.genderInput.text() # Get student gender from user
-        coursecode = self.coursepickerbox.currentText() # Get course code from user
-        self.addStudent.clicked.connect(self.addstudent(idnumber, name, year_level, studentgender, coursecode))
+        self.studentInfoEditor = self.findChild(QGroupBox, 'studentInfoEditor')
+        self.addStudent.clicked.connect(lambda:self.addstudent())
+        #self.deleteStudent.clicked.connect(lambda: self.pushButton_handler())
 
 
     def pushButton_handler(self):
-        print('BruH')
+        course = self.coursepickerbox.currentText()
+        idnum = self.idNumberInput.text()
+        name = self.nameInput.text()
+        year = self.yearlvlInput.text()
+        gender = self.genderInput.text()
+        print(course, idnum, name, year, gender)
+
+
+
 
     def createcsvfiles(self) -> None:
         if os.path.exists('university_records.csv') and os.path.exists('course_records.csv'):
@@ -117,29 +122,27 @@ class Controller(QtWidgets.QMainWindow):
                 tableWidget.setColumnWidth(1, 190)
 
     def loadcoursecode(self):
-        course_code = []
+        course_list = []
         # Open CSV File and store data to a variable
         with open('course_records.csv', 'r') as file:
             courserecord = csv.reader(file)
             # For loop to read the values of the Course Name column
             for row in courserecord:
-                course_code.append(row[1])  # Populate the list of course_code
-        self.coursepickerbox.addItems(course_code)
+                course_list.append(row[0])  # Populate the list of course_code
+        self.coursepickerbox.addItems(course_list)
 
-    def addstudent(self, idnum, student_name, yearlvl, gender, course):
-        # Add values to the Student Table Widget
-        row_pos = self.studentTableWidget.rowCount()
-        self.studentTableWidget.insertRow(row_pos)
-        self.studentTableWidget.setItem(row_pos, 0, QTableWidgetItem(idnum))
-        self.studentTableWidget.setItem(row_pos, 1, QTableWidgetItem(student_name))
-        self.studentTableWidget.setItem(row_pos, 2, QTableWidgetItem(yearlvl))
-        self.studentTableWidget.setItem(row_pos, 3, QTableWidgetItem(gender))
-        self.studentTableWidget.setItem(row_pos, 4, QTableWidgetItem(course))
 
+    def addstudent(self):
+        id_input = self.idNumberInput.text()
+        name_input = self.nameInput.text()
+        year_input = self.yearlvlInput.text()
+        gender_input = self.genderInput.text()
+        course_input = self.coursepickerbox.currentText()
         # Add values to the CSV file
         with open(filename_studentCSV, mode='a', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=student_field_csv)
-            writer.writerows({"IDNumber": idnum, "Name": student_name, "Year Level": yearlvl, "Gender": gender, "Course Code": course})
+            writer = csv.DictWriter(file, fieldnames=student_field_csv, extrasaction='ignore')
+            writer.writerow({'IDNumber': id_input, 'Name': name_input, 'Year Level': year_input, 'Gender': gender_input, 'Course Code': course_input})
+
 
 
 
