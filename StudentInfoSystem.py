@@ -111,6 +111,7 @@ class Controller(QtWidgets.QMainWindow, MainForm):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle('Student Information System')
         self.show()
         # Creating the CSV files for student and course records
         self.createCSV.clicked.connect(self.createcsvfiles)
@@ -305,23 +306,30 @@ class Controller(QtWidgets.QMainWindow, MainForm):
                     index_to_delete = i
                     break
             # Remove the corresponding dictionary
-            del rows[index_to_delete]
+            if index_to_delete is not None:
+                del rows[index_to_delete]
+                student_del = QMessageBox()
+                student_del.setWindowTitle('Delete Student Info')
+                student_del.setText('Student with ID Number: ' + id_value + ' has been deleted.')
+                student_del.setIcon(QMessageBox.Information)
+                student_del.exec_()
+            else:
+                student_not_exist = QMessageBox()
+                student_not_exist.setWindowTitle('Delete Student Info')
+                student_not_exist.setText('Student with ID Number: ' + id_value + ' does not exist!')
+                student_not_exist.setIcon(QMessageBox.Critical)
+                student_not_exist.setStandardButtons(QMessageBox.Close)
+                student_not_exist.exec_()
             #  Write the updated list of dictionaries back to the CSV file
             with open(filename_studentCSV, 'w', newline='') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=student_field_csv)
                 writer.writerows(rows)
-                # Popup notification if student info is deleted.
-                student_del = QMessageBox()
-                student_del.setWindowTitle('Student Delete')
-                student_del.setText('Student with ID Number: ' + id_value + ' has been deleted.')
-                student_del.setIcon(QMessageBox.Information)
-                student_del.exec_()
-
+                # Popup notification if student info is deleted
         else:
-            # Popup notification if student id number does not exist.
+            # Popup notification if the user presses ok without inputing ID number.
             student_not_exist = QMessageBox()
             student_not_exist.setWindowTitle('Student Delete')
-            student_not_exist.setText('Student with ID Number: ' + id_value + ' does not exist!')
+            student_not_exist.setText('Please enter student ID number.')
             student_not_exist.setIcon(QMessageBox.Critical)
             student_not_exist.setStandardButtons(QMessageBox.Close)
             student_not_exist.exec_()
@@ -345,22 +353,28 @@ class Controller(QtWidgets.QMainWindow, MainForm):
                     index_to_delete = i
                     break
             # Remove the corresponding dictionary
-            del rows[index_to_delete]
-            #  Write the updated list of dictionaries back to the CSV file
-            with open(filename_courseCSV, 'w', newline='') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=course_field_csv)
-                writer.writerows(rows)
-                # Pop up notification to confirm that course has been deleted from the CSV file
+            if index_to_delete is not None:
+                del rows[index_to_delete]
                 course_del = QMessageBox()
                 course_del.setWindowTitle('Course Delete')
                 course_del.setText('Course with code: ' + course_codevalue + ' has been deleted.')
                 course_del.setIcon(QMessageBox.Information)
                 course_del.exec_()
+            else:
+                course_not_found = QMessageBox()
+                course_not_found.setWindowTitle('Course Delete')
+                course_not_found.setText('Course with code: ' + course_codevalue + ' does not exist!')
+                course_not_found.setIcon(QMessageBox.Critical)
+                course_not_found.exec_()
+            #  Write the updated list of dictionaries back to the CSV file
+            with open(filename_courseCSV, 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=course_field_csv)
+                writer.writerows(rows)
         else:
             # Popup notification if course code does not exist in the CSV file.
             course_not_exist = QMessageBox()
-            course_not_exist.setWindowTitle('Course Delete')
-            course_not_exist.setText('Course with code: ' + course_codevalue + ' does not exist!')
+            course_not_exist.setWindowTitle('Delete Course')
+            course_not_exist.setText('Please enter a valid course code to delete.')
             course_not_exist.setIcon(QMessageBox.Critical)
             course_not_exist.setStandardButtons(QMessageBox.Close)
             course_not_exist.exec_()
