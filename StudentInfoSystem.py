@@ -3,38 +3,136 @@ import csv
 from csv import DictWriter, DictReader
 import os.path
 import os
+from functools import partial
+
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableWidgetItem, QTableWidget, QComboBox, QLineEdit, QGroupBox, \
-    QDialog, QInputDialog
+    QDialog, QInputDialog, QLabel, QVBoxLayout, QPushButton, QFormLayout
+from PyQt5.uic import loadUiType
 
 # GLOBAL VARIABLES
 filename_studentCSV = "university_records.csv"
 filename_courseCSV = "course_records.csv"
 student_field_csv = ['IDNumber', 'Name', 'Year Level', 'Gender', 'Course Code']
 course_field_csv = ['Course Code', 'Course Name']
+MainForm, _ = loadUiType("GUIforSSIS.ui")
+class StudentInformationEditor(QDialog, MainForm):
+    def __init__(self, parent, studentIDnum):
+        super().__init__(parent)
 
+        self.setWindowTitle("Student Information Editor")
+        self.setGeometry(100, 100, 300, 100)
 
-class Controller(QtWidgets.QMainWindow):
+        self.studentID = studentIDnum
+
+        self.name_label = QLabel('New Name:')
+        self.name_edit = QLineEdit()
+
+        self.year_label = QLabel('New Year Level:')
+        self.year_edit = QLineEdit()
+
+        self.gender_label = QLabel('New Gender:')
+        self.gender_edit = QLineEdit()
+
+        self.course_label = QLabel('Course Code:')
+        self.course_combo = QComboBox()
+        # Code to populate the combobox, same function used in the Controller class.
+        course_list = []
+        # Open CSV File and store data to a variable
+        with open('course_records.csv', 'r') as file:
+            courselist = csv.reader(file)
+            next(courselist)
+            # For loop to read the values of the Course Name column
+            for row in courselist:
+                course_list.append(row[0])  # Populate the list of course_code
+        self.course_combo.addItems(course_list)
+
+        self.update_button = QPushButton('Update Info', self)
+        self.update_button.clicked.connect(self.update_student)
+        self.cancel_button = QPushButton('Cancel', self)
+        self.cancel_button.clicked.connect(self.cancel)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.name_label)
+        self.layout.addWidget(self.name_edit)
+        self.layout.addWidget(self.year_label)
+        self.layout.addWidget(self.year_edit)
+        self.layout.addWidget(self.gender_label)
+        self.layout.addWidget(self.gender_edit)
+        self.layout.addWidget(self.course_label)
+        self.layout.addWidget(self.course_combo)
+        self.layout.addWidget(self.update_button)
+        self.layout.addWidget(self.cancel_button)
+        self.setLayout(self.layout)
+    def update_student(self):
+        try:
+            student_id = self.studentID
+            new_name = self.name_edit.text()
+            new_yearlevel = self.year_edit.text()
+            new_gender = self.gender_edit.text()
+            new_course = self.course_combo.currentText()
+            updated_values = {'IDNumber': student_id, 'Name': new_name, 'Year Level': new_yearlevel, 'Gender': new_gender, 'Course Code': new_course}
+            # Read the CSV file and load its contents into a list of dictionaries
+            rows = []
+            with open(filename_studentCSV, 'r', newline='') as csvfile:
+                studentcsv = csv.DictReader(csvfile)
+                for row in studentcsv:
+                    rows.append(row)
+            # Find the specific row you want to edit based on the IDNumber
+            for row in rows:
+                if row['IDNumber'] == student_id:
+                    # Modify the values in the dictionary for the desired fields
+                    row.update(updated_values)
+                    break  # Break the loop once the row is found and updated
+            # Write the updated data back to the CSV file
+            with open(filename_studentCSV, 'w', newline='') as csvfile:
+                studentcsv_update = csv.DictWriter(csvfile, fieldnames=student_field_csv, extrasaction='ignore')
+                # Write the Headers
+                studentcsv_update.writeheader()
+                # Write the updated rows
+                studentcsv_update.writerows(rows)
+            update_success = QMessageBox()
+            update_success.setWindowTitle('Success!')
+            update_success.setText('Student information updated successfully!')
+            update_success.setIcon(QMessageBox.Information)
+            update_success.exec_()
+            self.close()
+        except Exception as e:  # Catch any exceptions
+            print(f"An error occurred: {e}")
+            error_message = QMessageBox()
+            error_message.setWindowTitle('Error')
+            error_message.setText(f"An error occurred while updating: {e}")
+            error_message.setIcon(QMessageBox.Critical)
+            error_message.exec_()
+    def cancel(self):
+        self.close()
+
+class Controller(QtWidgets.QMainWindow, MainForm):
     def __init__(self):
-        super(Controller, self).__init__()
-        self.ui = uic.loadUi('GUIforSSIS.ui', self)
+        super().__init__()
+        self.setupUi(self)
         self.show()
         # Creating the CSV files for student and course records
-        self.createCSV.clicked.connect(lambda:self.createcsvfiles())
+        self.createCSV.clicked.connect(self.createcsvfiles)
         # Populating the Tables for the SSIS Application
         self.loadstudentCSV("university_records.csv", self.studentInfoDisplay)
         self.loadcourseCSV('course_records.csv', self.courseListDisplay)
         # Populating the ComboBox for the Course Picker
         self.coursepickerbox = self.findChild(QComboBox, 'coursePicker')
         self.loadcoursecode()
+        # Opening the Dialog
+
         # Adding the student info
-        self.addStudent.clicked.connect(lambda: self.addstudent())
+        self.addStudent.clicked.connect(self.addstudent)
         # Deleting student info
-        self.deleteStudent.clicked.connect(lambda: self.deletestudent())
+        self.deleteStudent.clicked.connect(self.deletestudent)
+        # Editing student info
+        self.editStudent.clicked.connect(self.editstudent)
         # Adding course
-        self.addCourse.clicked.connect(lambda: self.addcourse())
+        self.addCourse.clicked.connect(self.addcourse)
         # Deleting a course from the CSV file
-        self.deleteCourse.clicked.connect(lambda: self.deletecourse())
+        self.deleteCourse.clicked.connect(self.deletecourse)
+
 
 
     def pushButton_handler(self):
@@ -44,8 +142,6 @@ class Controller(QtWidgets.QMainWindow):
         year = self.yearlvlInput.text()
         gender = self.genderInput.text()
         print(course, idnum, name, year, gender)
-
-
 
 
     def createcsvfiles(self) -> None:
@@ -115,10 +211,10 @@ class Controller(QtWidgets.QMainWindow):
 
                 # Populate the table with data excluding the header row
                 for row in range(1, len(data)):
-                    tableWidget.insertRow(row - 1)
+                    tableWidget.insertRow(row - 2)
                     for column in range(len(headers)):
                         item = QTableWidgetItem(data[row][column])
-                        tableWidget.setItem(row - 1, column, item)
+                        tableWidget.setItem(row - 2, column, item)
 
                 # Sets the width for the Course Code and Course Name columns
                 tableWidget.setColumnWidth(0, 90)
@@ -129,6 +225,7 @@ class Controller(QtWidgets.QMainWindow):
         # Open CSV File and store data to a variable
         with open('course_records.csv', 'r') as file:
             courserecord = csv.reader(file)
+            next(courserecord)
             # For loop to read the values of the Course Name column
             for row in courserecord:
                 course_list.append(row[0])  # Populate the list of course_code
@@ -156,6 +253,9 @@ class Controller(QtWidgets.QMainWindow):
         with open(filename_courseCSV, mode='r') as csvfile:
             course_read = csv.DictReader(csvfile)
             for row_dict in course_read:
+                if course_read.line_num == 2:
+                    continue
+
                 row_position = self.courseListDisplay.rowCount()
                 self.courseListDisplay.insertRow(row_position)
                 # Appending the values into the table
@@ -267,7 +367,35 @@ class Controller(QtWidgets.QMainWindow):
 
         self.updatecoursetable()
 
+    def editstudent(self):
+       # Code for the QInputDialog for the ID Number input
+        key = 'IDNumber'
+        enteridnum = QInputDialog()
+        studentID_edit, ok = enteridnum.getText(self, "Edit Student", "Enter student ID number to edit info: ")
+        studentID = str(studentID_edit)
+
+        if ok and studentID_edit:
+            try:
+                self.update_dialog = StudentInformationEditor(self, studentID)  # Pass self and studentID
+                self.update_dialog.show()
+                self.update_dialog.exec_()
+                self.updatestudenttable()
+            except Exception as e:  # Add exception handling
+                print(f"An error occurred: {e}")
+                error_message = QMessageBox()
+                error_message.setWindowTitle('Error')
+                error_message.setText(f"An error occurred: {e}")
+                error_message.setIcon(QMessageBox.Critical)
+                error_message.exec_()
+        else:
+            not_updated = QMessageBox()
+            not_updated.setWindowTitle('Update Student Info')
+            not_updated.setText('Student ID Number does not exist!')
+            not_updated.setIcon(QMessageBox.Warning)
+            not_updated.setStandardButtons(QMessageBox.Close)
+            not_updated.exec_()
+
 
 app = QtWidgets.QApplication(sys.argv)
 window = Controller()
-app.exec_()
+sys.exit(app.exec_())
