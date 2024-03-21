@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1134</width>
-    <height>679</height>
+    <width>1227</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
-      <width>291</width>
+      <y>40</y>
+      <width>301</width>
       <height>191</height>
      </rect>
     </property>
@@ -166,7 +166,7 @@
       <rect>
        <x>110</x>
        <y>30</y>
-       <width>171</width>
+       <width>71</width>
        <height>21</height>
       </rect>
      </property>
@@ -191,24 +191,53 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="yearlvlInput">
+    <widget class="QComboBox" name="yearLevelPicker">
      <property name="geometry">
       <rect>
        <x>110</x>
        <y>90</y>
        <width>171</width>
-       <height>21</height>
+       <height>22</height>
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="genderInput">
+    <widget class="QComboBox" name="genderPicker">
      <property name="geometry">
       <rect>
        <x>110</x>
        <y>120</y>
        <width>171</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="idNumberInput_2">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>30</y>
+       <width>71</width>
        <height>21</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="hypen">
+     <property name="geometry">
+      <rect>
+       <x>180</x>
+       <y>10</y>
+       <width>31</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Ebrima</family>
+       <pointsize>28</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;-&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </widget>
@@ -216,8 +245,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>380</y>
-      <width>291</width>
+      <y>290</y>
+      <width>301</width>
       <height>91</height>
      </rect>
     </property>
@@ -303,7 +332,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>300</y>
+      <y>240</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -319,8 +348,8 @@ color: white;</string>
    <widget class="QPushButton" name="editStudent">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>300</y>
+      <x>130</x>
+      <y>240</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -336,8 +365,8 @@ color: white;</string>
    <widget class="QPushButton" name="deleteStudent">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>300</y>
+      <x>240</x>
+      <y>240</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -354,8 +383,8 @@ color: white;
    <widget class="QPushButton" name="addCourse">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>480</y>
+      <x>20</x>
+      <y>390</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -371,8 +400,8 @@ color: white;</string>
    <widget class="QPushButton" name="deleteCourse">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>480</y>
+      <x>240</x>
+      <y>390</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -389,15 +418,31 @@ color: white;
    <widget class="QTableWidget" name="studentInfoDisplay">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>330</x>
       <y>40</y>
-      <width>501</width>
+      <width>601</width>
       <height>601</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <column>
      <property name="text">
       <string>ID_Number</string>
+     </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="background">
+      <color>
+       <red>0</red>
+       <green>0</green>
+       <blue>0</blue>
+      </color>
      </property>
     </column>
     <column>
@@ -420,13 +465,21 @@ color: white;
       <string>Course Code</string>
      </property>
     </column>
+    <column>
+     <property name="text">
+      <string>Enrollment Status</string>
+     </property>
+     <property name="textAlignment">
+      <set>AlignLeading|AlignVCenter</set>
+     </property>
+    </column>
    </widget>
    <widget class="QTableWidget" name="courseListDisplay">
     <property name="geometry">
      <rect>
-      <x>850</x>
+      <x>940</x>
       <y>40</y>
-      <width>281</width>
+      <width>271</width>
       <height>601</height>
      </rect>
     </property>
@@ -450,20 +503,20 @@ color: white;
    <widget class="QLabel" name="studentLabel">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>330</x>
       <y>10</y>
-      <width>111</width>
-      <height>21</height>
+      <width>131</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Ebrima</family>
-      <pointsize>14</pointsize>
+      <pointsize>13</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Student Info</string>
+     <string>Search Student:</string>
     </property>
    </widget>
    <widget class="QLabel" name="courseLabel">
@@ -471,25 +524,25 @@ color: white;
      <rect>
       <x>940</x>
       <y>10</y>
-      <width>111</width>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Ebrima</family>
-      <pointsize>14</pointsize>
+      <pointsize>13</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Course List</string>
+     <string>Search Course:</string>
     </property>
    </widget>
    <widget class="QPushButton" name="createCSV">
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>40</y>
+      <y>480</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -501,6 +554,78 @@ font-size: 15px;</string>
     </property>
     <property name="text">
      <string>Create File</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="searchStudent">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>10</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="searchCourse">
+    <property name="geometry">
+     <rect>
+      <x>1060</x>
+      <y>10</y>
+      <width>151</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="searchbyLabel">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>10</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ebrima</family>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Search By:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="searchFilter">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>10</y>
+      <width>171</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editCourse">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>390</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(182, 182, 182);
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>Edit Course</string>
     </property>
    </widget>
   </widget>
