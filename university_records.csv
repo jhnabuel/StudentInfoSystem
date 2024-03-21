@@ -1,13 +1,14 @@
-IDNumber,Name,Year Level,Gender,Course Code
-2022-0423,John Christian Nino T. Abuel,2,Male,BSCS
-2022-0076,Kervin Lemuel D. Paalisbo,2,Male,BSCS
-2022-0380,Febe Gwyn R. Belvis,2,Female,BSCS
-2022-0018,Aref Raji Lomondaya,2,Male,BSA
-2022-0412,Niño Deyvid Polaos,2,Male,BSCE
-2023-0099,Johann Mikhail Montecalvo,1,Male,BSN
-2022-1636,Jiel Josiah A. Baguio,2,Male,BSECE
-2022-0245,Thaddea Kharla Freud V. Inocian,2,Female,BSN
-2022-0456,Krishna Gail M. Navarro,2,Female,BSBIO(MCB)
-2022-0002,Maigela Zia Garcia,2,Female,BSCS
-2022-0643,Seth Nicole E. Quidlat,2,Female,BSCS
-2022-0760,Jan Hazel Rose Lozano,2,Female,BSA
+IDNumber,Name,Year Level,Gender,Course Code,Enrollment Status
+2022-0423,John Christian Nino T. Abuel,2,Male,BSCS,Enrolled
+2022-0076,Kervin Lemuel D. Paalisbo,2,Male,BSCS,Enrolled
+2022-0380,Febe Gwyn R. Belvis,2,Female,BSCS,Enrolled
+2022-0018,Aref Raji Lomondaya,2,Male,BSA,Enrolled
+2022-0412,Niï¿½o Deyvid Polaos,2,Male,BSCE,Enrolled
+2023-0099,Johann Mikhail Montecalvo,1,Male,BSN,Enrolled
+2022-1636,Jiel Josiah A. Baguio,2,Male,BSECE,Enrolled
+2022-0245,Thaddea Kharla Freud V. Inocian,2,Female,BSN,Enrolled
+2022-0456,Krishna Gail M. Navarro,2,Female,BSBIO(MCB),Enrolled
+2022-0002,Maigela Zia Garcia,2,Female,BSCS,Enrolled
+2022-0643,Seth Nicole E. Quidlat,2,Female,BSCS,Enrolled
+2022-0760,Jan Hazel Rose Lozano,2,Female,BSA,Enrolled
+2231,jack,1,Male,Course not available,Not enrolled
